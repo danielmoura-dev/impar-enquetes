@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Events\VoteRegistered;
+use App\Mail\VoteConfirmationMail;
+use App\Mail\VoteReceivedMail;
 use App\Models\Poll;
+use App\Models\PollOption;
 use App\Models\Vote;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class VoteController extends Controller
 {
@@ -35,11 +39,9 @@ class VoteController extends Controller
         }
 
         // Regra 3: a opcao precisa pertencer A ESTA enquete (protecao IDOR)
-        $optionBelongsToPoll = $poll->options()
-            ->where('id', $validated['poll_option_id'])
-            ->exists();
+        $option = $poll->options()->find($validated['poll_option_id']);
 
-        if (! $optionBelongsToPoll) {
+        if (! $option) {
             return response()->json([
                 'message' => 'Opção inválida para esta enquete.',
             ], 422);
@@ -61,7 +63,7 @@ class VoteController extends Controller
             $vote = Vote::create([
                 'user_id' => $request->user()->id,
                 'poll_id' => $poll->id,
-                'poll_option_id' => $validated['poll_option_id'],
+                'poll_option_id' => $option->id,
             ]);
         } catch (UniqueConstraintViolationException) {
             return response()->json([
@@ -71,6 +73,17 @@ class VoteController extends Controller
 
         // Real-time: transmite as novas contagens para quem esta vendo a enquete
         VoteRegistered::dispatch($poll);
+
+        // Emails (processados em fila para nao atrasar a resposta):
+        // 1. Confirmacao para quem votou
+        Mail::to($request->user())->queue(
+            new VoteConfirmationMail($poll, $option)
+        );
+
+        // 2. Aviso para o dono da enquete
+        Mail::to($poll->user)->queue(
+            new VoteReceivedMail($poll, $request->user())
+        );
 
         return response()->json([
             'message' => 'Voto registrado com sucesso!',
