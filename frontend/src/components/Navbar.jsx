@@ -19,6 +19,13 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           <Link
+            to="/my-votes"
+            className="hidden text-sm font-medium text-gray-600 hover:text-blue-600 sm:block"
+          >
+            Meus votos
+          </Link>
+
+          <Link
             to="/polls/create"
             className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
           >

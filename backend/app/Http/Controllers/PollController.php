@@ -13,15 +13,34 @@ use Illuminate\Support\Facades\Gate;
 class PollController extends Controller
 {
     /**
-     * Lista todas as enquetes públicas (paginadas, mais recentes primeiro).
+     * Lista enquetes públicas com busca, ordenação e paginação.
+     *
+     * Query params aceitos:
+     *  - search: filtra por título ou descrição
+     *  - sort: 'recent' (padrão) ou 'popular' (mais votadas)
      */
     public function index(Request $request): JsonResponse
     {
         $polls = Poll::query()
-            ->with('user:id,name')        // dono da enquete (so id e nome, sem dados sensiveis)
-            ->withCount('votes')          // total de votos, calculado pelo banco
-            ->latest()                    // mais recentes primeiro
-            ->paginate(9);                // 9 por pagina (grade 3x3 no front)
+            ->with('user:id,name')
+            ->withCount('votes')
+            // Busca: aplicada somente se o parametro 'search' vier preenchido.
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $term = $request->string('search');
+
+                $query->where(function ($q) use ($term) {
+                    $q->where('title', 'like', "%{$term}%")
+                      ->orWhere('description', 'like', "%{$term}%");
+                });
+            })
+            // Ordenacao: 'popular' ordena por votos; padrao e mais recentes.
+            ->when($request->input('sort') === 'popular', function ($query) {
+                $query->orderByDesc('votes_count');
+            }, function ($query) {
+                $query->latest();
+            })
+            ->paginate(9)
+            ->withQueryString(); // mantem search/sort nos links de paginacao
 
         return response()->json($polls);
     }
@@ -92,5 +111,30 @@ class PollController extends Controller
         $poll->delete();
 
         return response()->json(['message' => 'Enquete excluída com sucesso.']);
+    }
+
+    /**
+     * Lista as enquetes em que o usuário autenticado votou,
+     * com a opção que ele escolheu em cada uma.
+     */
+    public function myVotes(Request $request): JsonResponse
+    {
+        $polls = Poll::query()
+            ->with('user:id,name')
+            ->withCount('votes')
+            // Traz junto o voto DESTE usuario (para mostrar o que ele escolheu)
+            ->with(['votes' => function ($query) use ($request) {
+                $query->where('user_id', $request->user()->id)
+                      ->with('option:id,text');
+            }])
+            // Apenas enquetes onde existe voto deste usuario
+            ->whereHas('votes', function ($query) use ($request) {
+                $query->where('user_id', $request->user()->id);
+            })
+            ->latest()
+            ->paginate(9)
+            ->withQueryString();
+
+        return response()->json($polls);
     }
 }

@@ -26,6 +26,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Enquetes (CRUD RESTful)
     Route::apiResource('polls', PollController::class);
 
+    // Histórico de votos do usuário logado
+    Route::get('/my-votes', [PollController::class, 'myVotes']);
+
     // Votação (com rate limiting: 10/min por usuário)
     Route::post('/polls/{poll}/votes', [VoteController::class, 'store'])
         ->middleware('throttle:votes');

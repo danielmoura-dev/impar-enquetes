@@ -9,6 +9,7 @@ import Home from './pages/Home'
 import CreatePoll from './pages/CreatePoll'
 import PollDetail from './pages/PollDetail'
 import EditPoll from './pages/EditPoll'
+import MyVotes from './pages/MyVotes'
 
 export default function App() {
   return (
@@ -49,6 +50,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <EditPoll />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-votes"
+            element={
+              <ProtectedRoute>
+                <MyVotes />
               </ProtectedRoute>
             }
           />

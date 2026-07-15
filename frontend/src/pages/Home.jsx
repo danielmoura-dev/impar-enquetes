@@ -9,38 +9,81 @@ export default function Home() {
   const [lastPage, setLastPage] = useState(1)
   const [loading, setLoading] = useState(true)
 
+  const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [sort, setSort] = useState('recent') // 'recent' | 'popular'
+
+  // Debounce da busca: espera 400ms depois da ultima tecla antes de chamar a API.
+  // Evita uma requisicao a cada caractere digitado.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search)
+      setPage(1) // nova busca volta para a primeira pagina
+    }, 400)
+
+    return () => clearTimeout(timer)
+  }, [search])
+
   useEffect(() => {
     setLoading(true)
 
     api
-      .get('/polls', { params: { page } })
+      .get('/polls', { params: { page, search: debouncedSearch, sort } })
       .then((response) => {
         setPolls(response.data.data)
         setLastPage(response.data.last_page)
       })
       .finally(() => setLoading(false))
-  }, [page])
+  }, [page, debouncedSearch, sort])
 
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-bold text-gray-800">Enquetes públicas</h1>
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-2xl font-bold text-gray-800">Enquetes públicas</h1>
+
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Buscar enquetes..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none sm:w-64"
+            />
+
+            <select
+              value={sort}
+              onChange={(e) => {
+                setSort(e.target.value)
+                setPage(1)
+              }}
+              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+            >
+              <option value="recent">Mais recentes</option>
+              <option value="popular">Mais votadas</option>
+            </select>
+          </div>
+        </div>
 
         {loading && <p className="text-gray-500">Carregando enquetes...</p>}
 
         {!loading && polls.length === 0 && (
           <div className="rounded-xl bg-white p-8 text-center shadow">
             <p className="text-gray-600">
-              Nenhuma enquete ainda. Que tal criar a primeira?
+              {debouncedSearch
+                ? `Nenhuma enquete encontrada para "${debouncedSearch}".`
+                : 'Nenhuma enquete ainda. Que tal criar a primeira?'}
             </p>
-            <Link
-              to="/polls/create"
-              className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
-            >
-              Criar enquete
-            </Link>
+            {!debouncedSearch && (
+              <Link
+                to="/polls/create"
+                className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+              >
+                Criar enquete
+              </Link>
+            )}
           </div>
         )}
 
