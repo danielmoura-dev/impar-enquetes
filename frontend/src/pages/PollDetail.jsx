@@ -88,6 +88,22 @@ export default function PollDetail() {
     }
   }
 
+  async function handleShare() {
+    const url = window.location.href
+
+    try {
+      // API nativa de compartilhamento (mobile). Se nao existir, cai no catch.
+      if (navigator.share) {
+        await navigator.share({ title: poll.title, url })
+      } else {
+        await navigator.clipboard.writeText(url)
+        setFeedback('Link copiado para a área de transferência!')
+      }
+    } catch {
+      // usuario cancelou o compartilhamento — silencioso
+    }
+  }
+
   async function handleDelete() {
     if (!window.confirm('Excluir esta enquete? Essa ação não tem volta.')) return
 
@@ -152,6 +168,13 @@ export default function PollDetail() {
               </>
             )}
           </p>
+
+          <button
+            onClick={handleShare}
+            className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+          >
+            🔗 Compartilhar
+          </button>
 
           {poll.description && (
             <p className="mt-3 text-gray-600">{poll.description}</p>
