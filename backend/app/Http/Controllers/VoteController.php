@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\VoteRegistered;
 use App\Models\Poll;
 use App\Models\Vote;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -27,15 +28,13 @@ class VoteController extends Controller
         }
 
         // Regra 2: o dono nao vota na propria enquete
-        // (edital: "usuario pode votar em enquetes de OUTROS usuarios")
         if ($poll->user_id === $request->user()->id) {
             return response()->json([
                 'message' => 'Você não pode votar na sua própria enquete.',
             ], 403);
         }
 
-        // Regra 3: a opcao precisa pertencer A ESTA enquete
-        // (impede enviar o id de uma opcao de outra enquete)
+        // Regra 3: a opcao precisa pertencer A ESTA enquete (protecao IDOR)
         $optionBelongsToPoll = $poll->options()
             ->where('id', $validated['poll_option_id'])
             ->exists();
@@ -57,7 +56,7 @@ class VoteController extends Controller
             ], 409);
         }
 
-        // Regra 4 (camada 2): a constraint UNIQUE do banco cobre a condicao de corrida
+        // Regra 4 (camada 2): a constraint UNIQUE cobre a condicao de corrida
         try {
             $vote = Vote::create([
                 'user_id' => $request->user()->id,
@@ -69,6 +68,9 @@ class VoteController extends Controller
                 'message' => 'Você já votou nesta enquete.',
             ], 409);
         }
+
+        // Real-time: transmite as novas contagens para quem esta vendo a enquete
+        VoteRegistered::dispatch($poll);
 
         return response()->json([
             'message' => 'Voto registrado com sucesso!',
