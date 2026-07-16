@@ -62,11 +62,11 @@ export default function CreatePoll() {
   const fieldError = (field) => errors[field]?.[0]
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
 
       <main className="mx-auto max-w-2xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-bold text-gray-800">Nova enquete</h1>
+        <h1 className="mb-6 text-2xl font-bold text-slate-800">Nova enquete</h1>
 
         {fieldError('geral') && (
           <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
@@ -74,9 +74,12 @@ export default function CreatePoll() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5 rounded-xl bg-white p-6 shadow">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100 sm:p-6"
+        >
           <div>
-            <label htmlFor="title" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="title" className="mb-1 block text-sm font-medium text-slate-700">
               Título *
             </label>
             <input
@@ -85,7 +88,7 @@ export default function CreatePoll() {
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none"
             />
             {fieldError('title') && (
               <p className="mt-1 text-sm text-red-600">{fieldError('title')}</p>
@@ -93,7 +96,7 @@ export default function CreatePoll() {
           </div>
 
           <div>
-            <label htmlFor="description" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="description" className="mb-1 block text-sm font-medium text-slate-700">
               Descrição (opcional)
             </label>
             <textarea
@@ -101,12 +104,12 @@ export default function CreatePoll() {
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none"
             />
           </div>
 
           <div>
-            <label htmlFor="expires_at" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="expires_at" className="mb-1 block text-sm font-medium text-slate-700">
               Expira em (opcional)
             </label>
             <input
@@ -114,7 +117,7 @@ export default function CreatePoll() {
               type="datetime-local"
               value={expiresAt}
               onChange={(e) => setExpiresAt(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none"
             />
             {fieldError('expires_at') && (
               <p className="mt-1 text-sm text-red-600">{fieldError('expires_at')}</p>
@@ -122,7 +125,7 @@ export default function CreatePoll() {
           </div>
 
           <div>
-            <span className="mb-1 block text-sm font-medium text-gray-700">
+            <span className="mb-1 block text-sm font-medium text-slate-700">
               Opções * ({MIN_OPTIONS} a {MAX_OPTIONS})
             </span>
 
@@ -135,13 +138,13 @@ export default function CreatePoll() {
                     placeholder={`Opção ${index + 1}`}
                     value={option}
                     onChange={(e) => updateOption(index, e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none"
                   />
                   {options.length > MIN_OPTIONS && (
                     <button
                       type="button"
                       onClick={() => removeOption(index)}
-                      className="rounded-lg bg-red-50 px-3 text-red-600 hover:bg-red-100"
+                      className="shrink-0 rounded-lg bg-red-50 px-3 text-red-600 hover:bg-red-100"
                       title="Remover opção"
                     >
                       ✕
@@ -159,7 +162,7 @@ export default function CreatePoll() {
               <button
                 type="button"
                 onClick={addOption}
-                className="mt-2 text-sm font-medium text-blue-600 hover:underline"
+                className="mt-2 text-sm font-medium text-brand-600 hover:underline"
               >
                 + Adicionar opção
               </button>
@@ -169,7 +172,7 @@ export default function CreatePoll() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-lg bg-blue-600 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="w-full rounded-lg bg-brand-600 py-2 font-medium text-white shadow-sm transition hover:bg-brand-700 disabled:opacity-50"
           >
             {submitting ? 'Criando...' : 'Criar enquete'}
           </button>

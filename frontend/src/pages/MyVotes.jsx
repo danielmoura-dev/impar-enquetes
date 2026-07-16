@@ -22,27 +22,27 @@ export default function MyVotes() {
   }, [page])
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-bold text-gray-800">Meus votos</h1>
+        <h1 className="mb-6 text-2xl font-bold text-slate-800">Meus votos</h1>
 
-        {loading && <p className="text-gray-500">Carregando...</p>}
+        {loading && <p className="text-slate-500">Carregando...</p>}
 
         {!loading && polls.length === 0 && (
-          <div className="rounded-xl bg-white p-8 text-center shadow">
-            <p className="text-gray-600">Você ainda não votou em nenhuma enquete.</p>
+          <div className="rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-100">
+            <p className="text-slate-600">Você ainda não votou em nenhuma enquete.</p>
             <Link
               to="/"
-              className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+              className="mt-4 inline-block rounded-lg bg-brand-600 px-4 py-2 font-medium text-white shadow-sm transition hover:bg-brand-700"
             >
               Explorar enquetes
             </Link>
           </div>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {polls.map((poll) => {
             // O back trouxe apenas o voto deste usuario no array 'votes'
             const myVote = poll.votes?.[0]
@@ -51,19 +51,21 @@ export default function MyVotes() {
               <Link
                 key={poll.id}
                 to={`/polls/${poll.id}`}
-                className="rounded-xl bg-white p-5 shadow transition hover:shadow-md"
+                className="group rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100 transition hover:-translate-y-0.5 hover:shadow-md"
               >
-                <h2 className="mb-1 font-semibold text-gray-800">{poll.title}</h2>
+                <h2 className="mb-1 font-semibold text-slate-800 group-hover:text-brand-700">
+                  {poll.title}
+                </h2>
 
                 {myVote?.option && (
-                  <p className="mb-2 text-sm text-blue-700">
+                  <p className="mb-2 text-sm text-accent-700">
                     Você votou em: <strong>{myVote.option.text}</strong>
                   </p>
                 )}
 
-                <div className="flex items-center justify-between text-xs text-gray-400">
+                <div className="flex items-center justify-between text-xs text-slate-400">
                   <span>por {poll.user?.name}</span>
-                  <span>
+                  <span className="rounded-full bg-brand-50 px-2 py-0.5 font-medium text-brand-700">
                     {poll.votes_count} {poll.votes_count === 1 ? 'voto' : 'votos'}
                   </span>
                 </div>
@@ -77,17 +79,17 @@ export default function MyVotes() {
             <button
               onClick={() => setPage((p) => p - 1)}
               disabled={page === 1}
-              className="rounded-lg bg-white px-4 py-2 text-sm shadow disabled:opacity-40"
+              className="rounded-lg bg-white px-4 py-2 text-sm shadow-sm ring-1 ring-slate-200 disabled:opacity-40"
             >
               Anterior
             </button>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-slate-600">
               Página {page} de {lastPage}
             </span>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page === lastPage}
-              className="rounded-lg bg-white px-4 py-2 text-sm shadow disabled:opacity-40"
+              className="rounded-lg bg-white px-4 py-2 text-sm shadow-sm ring-1 ring-slate-200 disabled:opacity-40"
             >
               Próxima
             </button>

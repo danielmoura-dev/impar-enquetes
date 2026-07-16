@@ -37,20 +37,20 @@ export default function Home() {
   }, [page, debouncedSearch, sort])
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold text-gray-800">Enquetes públicas</h1>
+          <h1 className="text-2xl font-bold text-slate-800">Enquetes públicas</h1>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <input
               type="text"
               placeholder="Buscar enquetes..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none sm:w-64"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none sm:w-64"
             />
 
             <select
@@ -59,7 +59,7 @@ export default function Home() {
                 setSort(e.target.value)
                 setPage(1)
               }}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none"
             >
               <option value="recent">Mais recentes</option>
               <option value="popular">Mais votadas</option>
@@ -67,11 +67,11 @@ export default function Home() {
           </div>
         </div>
 
-        {loading && <p className="text-gray-500">Carregando enquetes...</p>}
+        {loading && <p className="text-slate-500">Carregando enquetes...</p>}
 
         {!loading && polls.length === 0 && (
-          <div className="rounded-xl bg-white p-8 text-center shadow">
-            <p className="text-gray-600">
+          <div className="rounded-xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-100">
+            <p className="text-slate-600">
               {debouncedSearch
                 ? `Nenhuma enquete encontrada para "${debouncedSearch}".`
                 : 'Nenhuma enquete ainda. Que tal criar a primeira?'}
@@ -79,7 +79,7 @@ export default function Home() {
             {!debouncedSearch && (
               <Link
                 to="/polls/create"
-                className="mt-4 inline-block rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+                className="mt-4 inline-block rounded-lg bg-brand-600 px-4 py-2 font-medium text-white shadow-sm transition hover:bg-brand-700"
               >
                 Criar enquete
               </Link>
@@ -87,24 +87,24 @@ export default function Home() {
           </div>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {polls.map((poll) => (
             <Link
               key={poll.id}
               to={`/polls/${poll.id}`}
-              className="rounded-xl bg-white p-5 shadow transition hover:shadow-md"
+              className="group rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100 transition hover:-translate-y-0.5 hover:shadow-md"
             >
-              <h2 className="mb-1 font-semibold text-gray-800">{poll.title}</h2>
+              <h2 className="mb-1 font-semibold text-slate-800 group-hover:text-brand-700">
+                {poll.title}
+              </h2>
 
               {poll.description && (
-                <p className="mb-3 line-clamp-2 text-sm text-gray-500">
-                  {poll.description}
-                </p>
+                <p className="mb-3 line-clamp-2 text-sm text-slate-500">{poll.description}</p>
               )}
 
-              <div className="flex items-center justify-between text-xs text-gray-400">
+              <div className="flex items-center justify-between text-xs text-slate-400">
                 <span>por {poll.user?.name}</span>
-                <span>
+                <span className="rounded-full bg-brand-50 px-2 py-0.5 font-medium text-brand-700">
                   {poll.votes_count} {poll.votes_count === 1 ? 'voto' : 'votos'}
                 </span>
               </div>
@@ -117,19 +117,19 @@ export default function Home() {
             <button
               onClick={() => setPage((p) => p - 1)}
               disabled={page === 1}
-              className="rounded-lg bg-white px-4 py-2 text-sm shadow disabled:opacity-40"
+              className="rounded-lg bg-white px-4 py-2 text-sm shadow-sm ring-1 ring-slate-200 disabled:opacity-40"
             >
               Anterior
             </button>
 
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-slate-600">
               Página {page} de {lastPage}
             </span>
 
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page === lastPage}
-              className="rounded-lg bg-white px-4 py-2 text-sm shadow disabled:opacity-40"
+              className="rounded-lg bg-white px-4 py-2 text-sm shadow-sm ring-1 ring-slate-200 disabled:opacity-40"
             >
               Próxima
             </button>

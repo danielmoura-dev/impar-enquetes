@@ -121,9 +121,9 @@ export default function PollDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-slate-50">
         <Navbar />
-        <p className="p-8 text-center text-gray-500">Carregando...</p>
+        <p className="p-8 text-center text-slate-500">Carregando...</p>
       </div>
     )
   }
@@ -136,23 +136,23 @@ export default function PollDetail() {
   }))
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
 
       <main className="mx-auto max-w-2xl px-4 py-8">
-        <Link to="/" className="text-sm text-blue-600 hover:underline">
+        <Link to="/" className="text-sm text-brand-600 hover:underline">
           ← Voltar
         </Link>
 
-        <div className="mt-3 rounded-xl bg-white p-6 shadow">
-          <div className="mb-1 flex items-start justify-between gap-4">
-            <h1 className="text-2xl font-bold text-gray-800">{poll.title}</h1>
+        <div className="mt-3 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100 sm:p-6">
+          <div className="mb-1 flex flex-wrap items-start justify-between gap-3">
+            <h1 className="text-2xl font-bold text-slate-800">{poll.title}</h1>
 
             {isOwner && (
               <div className="flex shrink-0 gap-2">
                 <Link
                   to={`/polls/${id}/edit`}
-                  className="rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+                  className="rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-200"
                 >
                   Editar
                 </Link>
@@ -166,7 +166,7 @@ export default function PollDetail() {
             )}
           </div>
 
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-slate-400">
             por {poll.user?.name}
             {poll.expires_at && (
               <>
@@ -179,17 +179,17 @@ export default function PollDetail() {
 
           <button
             onClick={handleShare}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-200"
           >
             🔗 Compartilhar
           </button>
 
           {poll.description && (
-            <p className="mt-3 text-gray-600">{poll.description}</p>
+            <p className="mt-3 text-slate-600">{poll.description}</p>
           )}
 
           {isExpired && (
-            <div className="mt-4 rounded-lg bg-yellow-50 p-3 text-sm text-yellow-800">
+            <div className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
               Esta enquete está encerrada. Confira os resultados finais abaixo.
             </div>
           )}
@@ -203,14 +203,14 @@ export default function PollDetail() {
           {/* ---------- MODO VOTACAO ---------- */}
           {!showResults && (
             <div className="mt-6 space-y-2">
-              <p className="text-sm font-medium text-gray-700">Escolha uma opção:</p>
+              <p className="text-sm font-medium text-slate-700">Escolha uma opção:</p>
 
               {poll.options.map((option) => (
                 <button
                   key={option.id}
                   onClick={() => handleVote(option.id)}
                   disabled={voting}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 text-left transition hover:border-blue-500 hover:bg-blue-50 disabled:opacity-50"
+                  className="w-full rounded-lg border border-slate-300 px-4 py-3 text-left transition hover:border-brand-500 hover:bg-brand-50 disabled:opacity-50"
                 >
                   {option.text}
                 </button>
@@ -222,8 +222,8 @@ export default function PollDetail() {
           {showResults && (
             <div className="mt-6">
               <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm font-medium text-gray-700">Resultados</p>
-                <span className="flex items-center gap-1.5 text-xs text-gray-400">
+                <p className="text-sm font-medium text-slate-700">Resultados</p>
+                <span className="flex items-center gap-1.5 text-xs text-slate-400">
                   <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
@@ -244,17 +244,17 @@ export default function PollDetail() {
                   return (
                     <div key={option.id}>
                       <div className="mb-1 flex justify-between text-sm">
-                        <span className={isUserChoice ? 'font-semibold text-blue-700' : 'text-gray-700'}>
+                        <span className={isUserChoice ? 'font-semibold text-accent-700' : 'text-slate-700'}>
                           {option.text} {isUserChoice && '· seu voto'}
                         </span>
-                        <span className="text-gray-500">
+                        <span className="text-slate-500">
                           {percent}% ({option.votes_count})
                         </span>
                       </div>
-                      <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div className="h-3 w-full overflow-hidden rounded-full bg-slate-200">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
-                            isUserChoice ? 'bg-blue-600' : 'bg-blue-400'
+                            isUserChoice ? 'bg-accent-500' : 'bg-brand-400'
                           }`}
                           style={{ width: `${percent}%` }}
                         />
@@ -273,7 +273,7 @@ export default function PollDetail() {
                       <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                       <YAxis allowDecimals={false} />
                       <Tooltip />
-                      <Bar dataKey="votos" fill="#2563eb" radius={[6, 6, 0, 0]} />
+                      <Bar dataKey="votos" fill="#ea580c" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
