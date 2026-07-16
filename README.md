@@ -186,6 +186,11 @@ Todas sob o prefixo `/api`. As protegidas exigem header `Authorization: Bearer {
 - **Broadcast imediato (`ShouldBroadcastNow`) para votos, fila para e-mails:** latência importa no tempo real; no e-mail, não — então ele vai para a fila e não atrasa a resposta do voto.
 - **Form Requests + Policies:** validação e autorização isoladas do controller, que fica magro e legível.
 - **Opções não editáveis após criação:** preserva a integridade dos votos já registrados.
+- **Enquetes anônimas (opcional) — decisão de não implementar:** votação sem login conflita
+  com o requisito obrigatório de voto único por usuário. Alternativas como controle por IP
+  ou cookie são burláveis e punem redes compartilhadas. Priorizei a integridade do requisito
+  obrigatório; em contrapartida, a **visualização** de enquetes é pública, viabilizando o
+  compartilhamento via link sem cadastro.
 
 ---
 

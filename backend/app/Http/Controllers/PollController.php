@@ -68,23 +68,28 @@ class PollController extends Controller
     }
 
     /**
-     * Detalhes de uma enquete, com contagem de votos por opção
-     * e qual opção o usuário logado votou (se votou).
+     * Detalhes de uma enquete (rota pública).
+     * Se um token válido for enviado, personaliza a resposta
+     * (voto do usuário, se é o dono). Visitantes veem dados neutros.
      */
     public function show(Request $request, Poll $poll): JsonResponse
     {
         $poll->load(['user:id,name', 'options' => fn ($q) => $q->withCount('votes')]);
         $poll->loadCount('votes');
 
-        $userVote = $poll->votes()
-            ->where('user_id', $request->user()->id)
-            ->first();
+        // Em rota publica, user('sanctum') resolve o usuario SE um token
+        // valido vier no header — sem exigir autenticacao (retorna null se nao).
+        $user = $request->user('sanctum');
+
+        $userVote = $user
+            ? $poll->votes()->where('user_id', $user->id)->first()
+            : null;
 
         return response()->json([
             'poll' => $poll,
             'user_vote_option_id' => $userVote?->poll_option_id,
             'is_expired' => $poll->isExpired(),
-            'is_owner' => $poll->user_id === $request->user()->id,
+            'is_owner' => $user !== null && $poll->user_id === $user->id,
         ]);
     }
 
