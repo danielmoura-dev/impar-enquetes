@@ -35,7 +35,7 @@ class VoteReceivedMail extends Mailable implements ShouldQueue
      */
     public function middleware(): array
     {
-        return [new RateLimited('mailtrap')];
+        return [new RateLimited('mail')];
     }
 
     /**

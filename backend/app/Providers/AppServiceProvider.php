@@ -35,10 +35,10 @@ class AppServiceProvider extends ServiceProvider
                 });
         });
 
-        // Rate limit dos jobs de email: o plano gratuito do Mailtrap rejeita
-        // rajadas de envio ("Too many emails per second"). Em vez de falhar,
-        // o job (via RateLimited middleware nas Mailables) espera e tenta de novo.
-        RateLimiter::for('mailtrap', function () {
+        // Rate limit dos jobs de email: provedores de email (Resend inclusive)
+        // rejeitam rajadas de envio. Em vez de falhar, o job (via RateLimited
+        // middleware nas Mailables) espera e tenta de novo.
+        RateLimiter::for('mail', function () {
             return Limit::perSecond(2);
         });
 
