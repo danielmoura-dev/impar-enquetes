@@ -25,7 +25,7 @@ O foco foi organização de código, separação clara de responsabilidades, boa
 | Camada | Tecnologia | Motivo da escolha |
 | --- | --- | --- |
 | **Back-end** | Laravel 13 (PHP 8.4) | Framework maduro; autenticação, ORM, validação, filas e broadcasting nativos. Usa PDO por baixo. |
-| **Front-end** | React 18 + Vite | Requisito do desafio. Vite pela velocidade (o Create React App foi descontinuado). |
+| **Front-end** | React 19 + Vite | Requisito do desafio. Vite pela velocidade (o Create React App foi descontinuado). |
 | **Banco** | MySQL 8 | Requisito do desafio; integração transparente via Eloquent. |
 | **Autenticação** | Laravel Sanctum (tokens) | Padrão oficial para SPAs: tokens revogáveis, armazenados com hash no banco. |
 | **Real-time** | Laravel Reverb + Laravel Echo | Servidor WebSocket first-party do Laravel; Echo cuida de reconexão e canais. |
@@ -61,8 +61,11 @@ O foco foi organização de código, separação clara de responsabilidades, boa
 
 ```
 impar-enquetes/
-├── backend/        # API Laravel 13
-├── frontend/       # SPA React + Vite
+├── backend/          # API Laravel 13
+├── frontend/         # SPA React + Vite
+├── docs/             # Configs de referência do deploy (Nginx, Supervisor)
+├── scripts/deploy.sh # Script executado no deploy automático (VPS)
+├── .github/workflows/deploy.yml  # CI/CD: deploy automático a cada push na main
 └── README.md
 ```
 
@@ -111,37 +114,57 @@ erDiagram
 ## 🚀 Rodando localmente
 
 ### Pré-requisitos
-- PHP 8.3+ (recomendado 8.4) · Composer · Node 18+ · MySQL 8
+- **PHP 8.3+** · **Composer** · **Node 20.19+ ou 22.12+** (exigido pelo Vite 8 — Node 18 não funciona) · **MySQL 8** rodando
 
-### 1. Backend
+### 1. Banco de dados
+
+Crie o banco antes de migrar (o nome deve bater com `DB_DATABASE` no `.env`, veja o passo 2):
+
+```sql
+CREATE DATABASE impar_enquetes;
+```
+
+### 2. Backend
 
 ```bash
 cd backend
 composer install
 cp .env.example .env
 php artisan key:generate
-# configure as credenciais do banco no .env, depois:
-php artisan migrate
-php artisan install:api          # Sanctum (se ainda não instalado)
-php artisan install:broadcasting # Reverb (se ainda não instalado)
 ```
 
-### 2. Frontend
+Abra o `.env` e ajuste pelo menos:
+- `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` — credenciais do seu MySQL
+- `REVERB_APP_ID`, `REVERB_APP_KEY`, `REVERB_APP_SECRET` — qualquer valor (são segredos **locais**, entre o seu próprio servidor Reverb e o seu próprio front — não vêm de nenhum serviço externo). Ex.: `REVERB_APP_ID=100001`, e para as outras duas rode `php artisan tinker --execute="echo Str::random(20);"` duas vezes.
+- `MAIL_USERNAME` / `MAIL_PASSWORD` — opcional; sem isso os e-mails (confirmação de voto, reset de senha) falham silenciosamente na fila, mas o resto do sistema funciona normalmente
+
+> Sanctum e Reverb **já vêm instalados e versionados** neste repositório (`config/sanctum.php`, `config/reverb.php`, migrations, `routes/channels.php`). Não é necessário rodar `install:api` ou `install:broadcasting` — isso já foi feito uma vez pelo autor do projeto.
+
+```bash
+php artisan migrate
+
+# Opcional, mas recomendado: popula o banco com 10 usuários e 10 enquetes
+# de demonstração (senha de todos: senha12345, ex: neymar.jr@demo.com)
+php artisan db:seed --class=DemoSeeder
+```
+
+### 3. Frontend
 
 ```bash
 cd frontend
 npm install
 cp .env.example .env
-# ajuste VITE_API_URL e as variáveis do Reverb no .env
 ```
 
-### 3. Subir os 4 processos (cada um em um terminal)
+No `.env` do frontend, `VITE_REVERB_APP_KEY` precisa ser **idêntica** à `REVERB_APP_KEY` que você definiu no `.env` do backend. O resto (`localhost`/`8080`/`http`) já vem certo para desenvolvimento.
+
+### 4. Subir os 4 processos (cada um em um terminal)
 
 ```bash
 # 1) API
 cd backend && php artisan serve
 
-# 2) Servidor WebSocket
+# 2) Servidor WebSocket (sem isso, os resultados não atualizam em tempo real)
 cd backend && php artisan reverb:start
 
 # 3) Worker da fila (e-mails)
@@ -151,7 +174,9 @@ cd backend && php artisan queue:work
 cd frontend && npm run dev
 ```
 
-Acesse `http://localhost:5173`.
+Acesse `http://localhost:5173`. Se você rodou o `DemoSeeder`, já dá pra logar com qualquer um dos e-mails `@demo.com` (senha `senha12345`) e ver enquetes, votos e resultados populados.
+
+> ⚠️ Os 4 processos são independentes — não existe um único comando que suba tudo. Se mudar algo no `.env` do backend, **reinicie o `php artisan serve`**: ele é um processo único de longa duração e não relê o `.env` sozinho.
 
 ---
 
@@ -167,15 +192,15 @@ Todas sob o prefixo `/api`. As protegidas exigem header `Authorization: Bearer {
 | POST | `/reset-password` | ➖ | Redefine a senha |
 | POST | `/logout` | 🔒 | Revoga o token atual |
 | GET | `/me` | 🔒 | Dados do usuário logado |
-| GET | `/polls` | 🔒 | Lista enquetes (`?search=`, `?sort=popular`) |
+| GET | `/polls` | ➖ | Lista enquetes públicas (`?search=`, `?sort=popular`) |
 | POST | `/polls` | 🔒 | Cria enquete |
-| GET | `/polls/{id}` | 🔒 | Detalhes da enquete |
+| GET | `/polls/{id}` | ➖ | Detalhes da enquete (personaliza a resposta se autenticado) |
 | PUT | `/polls/{id}` | 🔒 | Edita (só o dono) |
 | DELETE | `/polls/{id}` | 🔒 | Exclui (só o dono) |
 | POST | `/polls/{id}/votes` | 🔒 | Vota (rate limit 10/min) |
 | GET | `/my-votes` | 🔒 | Histórico de votos |
 
-> A collection do Insomnia (`impar-enquetes-insomnia.json`) na raiz do repositório contém todas essas rotas prontas para importar.
+> A collection do Insomnia (`impar-enquetes-insomnia.yaml`) na raiz do repositório contém todas essas rotas prontas para importar.
 
 ---
 
@@ -203,7 +228,24 @@ Deploy em **VPS Ubuntu 24.04** com:
 - **Reverb** exposto via proxy WebSocket do Nginx (`/app` → `127.0.0.1:8080`)
 - **Supervisor** mantendo o Reverb e o worker da fila rodando e reiniciando no boot
 
-Arquivos de configuração de referência (Nginx e Supervisor) descritos em `/docs`.
+Configs de referência (Nginx e Supervisor) em [`docs/`](docs/).
+
+### Deploy automático (CI/CD)
+
+Todo push (ou merge) na branch `main` dispara o workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), que:
+
+1. Conecta na VPS via SSH (`appleboy/ssh-action`), usando os secrets do repositório:
+   `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`.
+2. Roda `git pull origin main` em `/var/www/impar-enquetes`.
+3. Executa [`scripts/deploy.sh`](scripts/deploy.sh), que:
+   - instala as dependências do backend (`composer install --no-dev`);
+   - roda as migrations (`migrate --force`);
+   - recria os caches de config/rotas/views;
+   - builda o front (`npm ci && npm run build`);
+   - ajusta permissões (`chown www-data`);
+   - reinicia os workers via `supervisorctl restart impar-queue:* impar-reverb`.
+
+Não há passo manual no dia a dia: mergear na `main` já publica em produção. O único cuidado é que o `.env` de produção na VPS **não é gerenciado pelo Git** (fica só no servidor) — mudanças nele são manuais.
 
 ---
 
