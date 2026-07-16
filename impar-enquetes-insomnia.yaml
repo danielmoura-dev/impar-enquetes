@@ -1,0 +1,253 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Impar Enquetes API
+meta:
+  id: wrk_013ad4c6e234407ca5caf3b0e690ae38
+  created: 1784126829063
+  modified: 1784126829063
+  description: ""
+collection:
+  - url: http://127.0.0.1:8000/api/register
+    name: Register
+    meta:
+      id: req_c6ba466f66924ed5a07294284774e407
+      created: 1784126835414
+      modified: 1784128205985
+      isPrivate: false
+      description: ""
+      sortKey: -1784127140488
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+            "name":"Maria",
+            "email":"maria@email.com",
+            "password":"12345678",
+            "password_confirmation":"12345678"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:8000/api/login
+    name: Login
+    meta:
+      id: req_b24ab79493334c15bad6f8ec991d7101
+      created: 1784127029003
+      modified: 1784131380371
+      isPrivate: false
+      description: ""
+      sortKey: -1784127122504
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+          "email": "daniel2@email.com",
+          "password": "12345678"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:8000/api/me
+    name: Me
+    meta:
+      id: req_644f1bfeabfe477aba5fd2055d703551
+      created: 1784127104520
+      modified: 1784128192787
+      isPrivate: false
+      description: ""
+      sortKey: -1784127104520
+    method: GET
+    authentication:
+      type: bearer
+      token: 
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:8000/api/logout
+    name: Logout
+    meta:
+      id: req_0217f0774dd44191877792047d2fe717
+      created: 1784127176456
+      modified: 1784131361655
+      isPrivate: false
+      description: ""
+      sortKey: -1784127028903
+    method: POST
+    authentication:
+      type: bearer
+      token: 
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:8000/api/polls
+    name: Criar Enquete
+    meta:
+      id: req_9a0a831291264746bef8937543d08c70
+      created: 1784127303663
+      modified: 1784130704644
+      isPrivate: false
+      description: ""
+      sortKey: -1784127303663
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+          "title": "Qual a melhor linguagem para backend?",
+          "description": "Enquete de teste do sistema",
+          "options": [
+            "PHP",
+            "Node.js",
+            "Python",
+            "Go"
+          ]
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+    authentication:
+      type: bearer
+      token: 
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:8000/api/polls
+    name: Listar Enquetes
+    meta:
+      id: req_9065bbad95934f228aa5511fbdb0e9b2
+      created: 1784127444216
+      modified: 1784128217683
+      isPrivate: false
+      description: ""
+      sortKey: -1784127444217
+    method: GET
+    authentication:
+      type: bearer
+      token: 
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:8000/api/polls/1
+    name: Buscar Enquete
+    meta:
+      id: req_ee7614e682a04067896bb0090797818d
+      created: 1784127609468
+      modified: 1784128223791
+      isPrivate: false
+      description: ""
+      sortKey: -1784127609468
+    method: GET
+    authentication:
+      type: bearer
+      token: 
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:8000/api/polls/9/votes
+    name: Testar Voto
+    meta:
+      id: req_13a4562512ab449a9e81a83b04a09fa9
+      created: 1784127731194
+      modified: 1784131426747
+      isPrivate: false
+      description: ""
+      sortKey: -1784127731194
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+          "poll_option_id": 33
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+    authentication:
+      type: bearer
+      token: 
+      prefix: ""
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:8000/api/polls/1/
+    name: Apagar Enquete
+    meta:
+      id: req_bedb3e5fe4c947c0abce6afd42200e3d
+      created: 1784127989140
+      modified: 1784128232591
+      isPrivate: false
+      description: ""
+      sortKey: -1784127989140
+    method: DELETE
+    authentication:
+      type: bearer
+      token: 
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_827c056345e1edd4e3da41ba8b6aa42e7227042a
+    created: 1784126829069
+    modified: 1784126829069
+environments:
+  name: Base Environment
+  meta:
+    id: env_827c056345e1edd4e3da41ba8b6aa42e7227042a
+    created: 1784126829067
+    modified: 1784126829067
+    isPrivate: false
