@@ -7,8 +7,8 @@ export default function ProtectedRoute({ children }) {
   // Ainda verificando a sessao (F5 com token salvo): nao decide nada ainda.
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-500">Carregando...</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-200 border-t-brand-600" />
       </div>
     )
   }

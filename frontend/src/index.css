@@ -1,1 +1,34 @@
 @import "tailwindcss";
+
+/*
+ * Paleta da marca: laranja (Impar Enquetes) como cor primaria, com um
+ * complementar azul-petroleo (accent) usado com moderacao para marcar
+ * "o seu voto" e elementos secundarios, sem competir com o laranja dos CTAs.
+ * Os neutros usam "slate" (em vez de "gray") em todo o app, pareado de
+ * propósito com o accent frio — combinacao classica para acompanhar um
+ * tom quente como o laranja.
+ */
+@theme {
+  --color-brand-50: var(--color-orange-50);
+  --color-brand-100: var(--color-orange-100);
+  --color-brand-200: var(--color-orange-200);
+  --color-brand-300: var(--color-orange-300);
+  --color-brand-400: var(--color-orange-400);
+  --color-brand-500: var(--color-orange-500);
+  --color-brand-600: var(--color-orange-600);
+  --color-brand-700: var(--color-orange-700);
+  --color-brand-800: var(--color-orange-800);
+  --color-brand-900: var(--color-orange-900);
+  --color-brand-950: var(--color-orange-950);
+
+  --color-accent-50: var(--color-teal-50);
+  --color-accent-100: var(--color-teal-100);
+  --color-accent-200: var(--color-teal-200);
+  --color-accent-300: var(--color-teal-300);
+  --color-accent-400: var(--color-teal-400);
+  --color-accent-500: var(--color-teal-500);
+  --color-accent-600: var(--color-teal-600);
+  --color-accent-700: var(--color-teal-700);
+  --color-accent-800: var(--color-teal-800);
+  --color-accent-900: var(--color-teal-900);
+}
