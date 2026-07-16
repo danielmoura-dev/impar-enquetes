@@ -12,10 +12,12 @@ import {
 import api from '../api/axios'
 import echo from '../api/echo'
 import Navbar from '../components/Navbar'
+import { useAuth } from '../context/AuthContext'
 
 export default function PollDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [poll, setPoll] = useState(null)
   const [userVoteOptionId, setUserVoteOptionId] = useState(null)
@@ -73,6 +75,12 @@ export default function PollDetail() {
   }, [id])
 
   async function handleVote(optionId) {
+    // Visitante: convida a entrar (leva junto a intencao de voltar aqui)
+    if (!user) {
+      navigate('/login')
+      return
+    }
+
     setVoting(true)
     setFeedback('')
 

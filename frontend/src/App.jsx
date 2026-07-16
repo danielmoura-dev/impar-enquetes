@@ -16,32 +16,22 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* ---------- Públicas ---------- */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
+          {/* Visualizar enquetes é público (compartilhamento via link!) */}
+          <Route path="/" element={<Home />} />
+          <Route path="/polls/:id" element={<PollDetail />} />
+
+          {/* ---------- Protegidas ---------- */}
           <Route
             path="/polls/create"
             element={
               <ProtectedRoute>
                 <CreatePoll />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/polls/:id"
-            element={
-              <ProtectedRoute>
-                <PollDetail />
               </ProtectedRoute>
             }
           />
